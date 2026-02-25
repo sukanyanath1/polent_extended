@@ -1,0 +1,42 @@
+#!/bin/bash
+#SBATCH --job-name=polent
+#SBATCH --output=polent_logs.txt
+#SBATCH --error=error.txt
+#SBATCH --time=4:00:00
+#SBATCH --cpus-per-task=2
+#SBATCH --mem-per-gpu=20GB
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:rtx4090:1
+#SBATCH --mail-user=YOUR_EMAIL_ID
+#SBATCH --mail-type=begin,end,fail
+
+
+
+# Load the CUDA module
+module load Anaconda3/2024.02-1 
+module load CUDA/12.8.0
+
+# Set the working directory to the project
+cd /storage/homefs/YOUR_USERNAME/polent_new
+
+# Initialize conda in non-interactive shell
+source ~/.bashrc
+conda activate YOUR_CONDA_ENV
+python -V
+which python
+
+export HUGGINGFACE_HUB_TOKEN="YOUR_HF_TOKEN"
+
+# Run the script
+MODEL_SAVING_PATH="/storage/homefs/YOUR_USERNAME/polent/models"
+RESULTS_PATH="/storage/homefs/YOUR_USERNAME/polent/results"
+MODEL_NAME_LIST=("bert-base-uncased" "roberta-base")
+DATASET_PATHS = ("/storage/homefs/YOUR_USERNAME/polent/data/hf_format/park" "/storage/homefs/YOUR_USERNAME/polent/data/hf_format/polent_data_park_style")
+
+for MODEL_NAME in "${MODEL_NAME_LIST[@]}"; do
+  for DATASET_PATH in "${DATASET_PATHS[@]}"; do
+    echo "Training with model: ${MODEL_NAME} and dataset: ${DATASET_PATH}"
+    python train.py --model_name "${MODEL_NAME}" --model_saving_path "${MODEL_SAVING_PATH}" --results_path "${RESULTS_PATH}" --dataset_path "${DATASET_PATH}"
+    echo "Training completed for model: ${MODEL_NAME} and dataset: ${DATASET_PATH}"
+  done
+done
