@@ -28,15 +28,28 @@ which python
 export HUGGINGFACE_HUB_TOKEN="YOUR_HF_TOKEN"
 
 # Run the script
-MODEL_SAVING_PATH="/storage/homefs/YOUR_USERNAME/polent/models"
-RESULTS_PATH="/storage/homefs/YOUR_USERNAME/polent/results"
-MODEL_NAME_LIST=("bert-base-uncased" "roberta-base")
-DATASET_PATHS = ("/storage/homefs/YOUR_USERNAME/polent/data/hf_format/park" "/storage/homefs/YOUR_USERNAME/polent/data/hf_format/polent_data_park_style")
+MODEL_SAVING_PATH="/storage/homefs/YOUR_USERNAME/polent_extended/models"
+RESULTS_PATH="/storage/homefs/YOUR_USERNAME/polent_extended/results"
+MODEL_NAME_LIST=(
+  "bert-base-uncased"
+  "roberta-base"
+  "microsoft/deberta-v3-large"
+  "answerdotai/ModernBERT-base"
+)
+DATASET_PATHS=(
+  "/storage/homefs/YOUR_USERNAME/polent_extended/data/hf_format/park"
+  "/storage/homefs/YOUR_USERNAME/polent_extended/data/hf_format/polent_data_park_style"
+)
+
+mkdir -p "$MODEL_SAVING_PATH" "$RESULTS_PATH"
 
 for MODEL_NAME in "${MODEL_NAME_LIST[@]}"; do
   for DATASET_PATH in "${DATASET_PATHS[@]}"; do
     echo "Training with model: ${MODEL_NAME} and dataset: ${DATASET_PATH}"
-    python train.py --model_name "${MODEL_NAME}" --model_saving_path "${MODEL_SAVING_PATH}" --results_path "${RESULTS_PATH}" --dataset_path "${DATASET_PATH}"
-    echo "Training completed for model: ${MODEL_NAME} and dataset: ${DATASET_PATH}"
+    python train.py \
+      --model_name "${MODEL_NAME}" \
+      --model_saving_path "${MODEL_SAVING_PATH}" \
+      --results_path "${RESULTS_PATH}" \
+      --dataset_path "${DATASET_PATH}"
   done
 done

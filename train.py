@@ -1,6 +1,6 @@
 import pandas as pd
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, TrainingArguments, Trainer, DataCollatorWithPadding,EarlyStoppingCallback
-from datasets import DatasetDict, Dataset
+from datasets import DatasetDict
 import torch
 import numpy as np
 import evaluate
@@ -22,8 +22,9 @@ args, _ = parser.parse_known_args()
 
 MODEL_NAME = args.model_name
 MODEL_SAVING_PATH = os.path.join(args.model_saving_path, MODEL_NAME)
-RESULTS_PATH = os.path.join(args.results_path, MODEL_NAME, "results.json")
 DATASET_PATH = args.dataset_path
+DATASET_NAME = os.path.basename(os.path.normpath(DATASET_PATH))
+RESULTS_PATH = os.path.join(args.results_path, MODEL_NAME, DATASET_NAME, "results.json")
 LOG_DIR = os.path.join(MODEL_SAVING_PATH, "logs")
 LOG_FILE = os.path.join(LOG_DIR, "train.log")
 
@@ -76,14 +77,14 @@ original_columns = data["train"].column_names
 tokenized_datasets = data.map(
     tokenize_function,
     batched=True,
-    fn_kwargs={"max_length": tokenizer.model_max_length},
+    fn_kwargs={"max_length": 512}, #tokenizer.model_max_length},
     remove_columns=original_columns,
 )
 
 # Define training arguments
 training_args = TrainingArguments(
     output_dir=MODEL_SAVING_PATH,
-    evaluation_strategy="epoch",
+    eval_strategy="epoch",
     save_strategy="epoch",
     per_device_train_batch_size=16,
     per_device_eval_batch_size=16,
@@ -118,7 +119,7 @@ trainer = Trainer(
     args=training_args,
     train_dataset=tokenized_datasets["train"],
     eval_dataset=tokenized_datasets["valid"],
-    tokenizer=tokenizer,
+    processing_class=tokenizer,
     compute_metrics=compute_metrics,
     data_collator = data_collator,
     callbacks=[EarlyStoppingCallback(early_stopping_patience=2)] 
@@ -135,8 +136,7 @@ valid_results = trainer.evaluate(tokenized_datasets["valid"])
 logger.info(f"Validation Accuracy: {valid_results['eval_accuracy']:.4f}")
 test_results = trainer.evaluate(tokenized_datasets["test"])
 logger.info(f"Test Accuracy: {test_results['eval_accuracy']:.4f}")
-
-predictions = trainer.predict(test_dataset=tokenized_datasets["test"])
+predictions = trainer.predict( test_dataset=tokenized_datasets["test"])
 
 # Extract the predicted labels and the true labels
 predicted_labels = predictions.predictions.argmax(axis=-1)

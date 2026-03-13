@@ -1,0 +1,9 @@
+model,dataset,validation_accuracy,test_accuracy,array_accuracy,num_examples,file_path
+answerdotai/ModernBERT-base,park,0.8590006844626967,0.8564386937769563,0.8564386937769563,1623,results\answerdotai\ModernBERT-base\park\results.json
+bert-base-uncased,park,0.8323066392881588,0.8250154035736291,0.8250154035736291,1623,results\bert-base-uncased\park\results.json
+microsoft/deberta-v3-large,park,0.6536618754277892,0.6531115218730745,0.6531115218730745,1623,results\microsoft\deberta-v3-large\park\results.json
+roberta-base,park,0.8254620123203286,0.8108441158348737,0.8108441158348737,1623,results\roberta-base\park\results.json
+answerdotai/ModernBERT-base,polent_data_park_style,0.6460268317853457,0.6491228070175439,0.6491228070175439,969,results\answerdotai\ModernBERT-base\polent_data_park_style\results.json
+bert-base-uncased,polent_data_park_style,0.6418988648090815,0.6480908152734778,0.6480908152734778,969,results\bert-base-uncased\polent_data_park_style\results.json
+microsoft/deberta-v3-large,polent_data_park_style,0.6501547987616099,0.6253869969040248,0.6253869969040248,969,results\microsoft\deberta-v3-large\polent_data_park_style\results.json
+roberta-base,polent_data_park_style,0.6501547987616099,0.6295149638802889,0.6295149638802889,969,results\roberta-base\polent_data_park_style\results.json
